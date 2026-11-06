@@ -7,8 +7,6 @@ on:
 
 jobs:
   build:
-    # ubuntu-latest (24.04) bazı Buildozer paketlerini (libtinfo5 vb.) bulamıyor;
-    # 22.04 sabitlemek bu hatayı kökten engeller.
     runs-on: ubuntu-22.04
     timeout-minutes: 120
 
@@ -50,14 +48,22 @@ jobs:
           restore-keys: |
             buildozer-${{ runner.os }}-
 
-      - name: Spec dosyasını kontrol et
+      - name: Dosyaları kontrol et
         run: |
           ls -la
           test -f main.py || (echo "main.py bulunamadı!" && exit 1)
           test -f buildozer.spec || (echo "buildozer.spec bulunamadı!" && exit 1)
 
       - name: APK derle
-        run: buildozer -v android debug 2>&1 | tee build.log
+        shell: bash
+        run: |
+          set -o pipefail
+          buildozer -v android debug 2>&1 | tee build.log
+
+      - name: APK var mı kontrol et
+        run: |
+          ls -la bin/ || true
+          ls bin/*.apk
 
       - name: APK yükle
         uses: actions/upload-artifact@v4
@@ -70,7 +76,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-log
-          path: |
-            build.log
-            .buildozer/android/platform/build-*/build/other_builds/*/*/*.log
+          path: build.log
           if-no-files-found: ignore
