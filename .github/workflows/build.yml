@@ -46,11 +46,36 @@ jobs:
           test -f main.py || (echo "main.py bulunamadı!" && exit 1)
           test -f buildozer.spec || (echo "buildozer.spec bulunamadı!" && exit 1)
 
+      - name: Apache Ant onceden indir (yeniden denemeli)
+        shell: bash
+        run: |
+          D=$HOME/.buildozer/android/platform
+          mkdir -p "$D"
+          for u in \
+            https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.4-bin.tar.gz \
+            https://downloads.apache.org/ant/binaries/apache-ant-1.10.14-bin.tar.gz ; do
+            if curl -fsSL --retry 8 --retry-delay 5 --retry-all-errors -o /tmp/ant.tgz "$u"; then
+              tar -xzf /tmp/ant.tgz -C "$D"
+              break
+            fi
+          done
+          ls "$D"
+          # Buildozer apache-ant-1.9.4 klasorunu bekliyor
+          [ -d "$D/apache-ant-1.9.4" ] || mv "$D"/apache-ant-* "$D/apache-ant-1.9.4"
+
       - name: APK derle
         shell: bash
         run: |
           set -o pipefail
-          buildozer -v android debug 2>&1 | tee build.log
+          # Ag kesintisi (indirme hatasi) olursa 3 kez dene
+          for i in 1 2 3; do
+            echo "=== DENEME $i ===" | tee -a build.log
+            if buildozer -v android debug 2>&1 | tee -a build.log; then
+              exit 0
+            fi
+            sleep 20
+          done
+          exit 1
 
       - name: HATANIN ASIL SEBEBI
         if: failure()
