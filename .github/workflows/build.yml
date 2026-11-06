@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    # ubuntu-latest (24.04) bazı Buildozer paketlerini (libtinfo5 vb.) bulamıyor;
+    # 22.04 sabitlemek bu hatayı kökten engeller.
     runs-on: ubuntu-22.04
     timeout-minutes: 120
 
@@ -38,17 +40,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer "cython==0.29.36" virtualenv setuptools
 
-      - name: Buildozer önbelleği
-        uses: actions/cache@v4
-        with:
-          path: |
-            .buildozer
-            ~/.buildozer
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
-          restore-keys: |
-            buildozer-${{ runner.os }}-
-
-      - name: Dosyaları kontrol et
+      - name: Spec dosyasını kontrol et
         run: |
           ls -la
           test -f main.py || (echo "main.py bulunamadı!" && exit 1)
@@ -60,10 +52,16 @@ jobs:
           set -o pipefail
           buildozer -v android debug 2>&1 | tee build.log
 
-      - name: APK var mı kontrol et
+      - name: HATANIN ASIL SEBEBI
+        if: failure()
+        shell: bash
         run: |
-          ls -la bin/ || true
-          ls bin/*.apk
+          sed 's/\x1b\[[0-9;]*m//g' build.log > clean.log
+          echo "===== ILK HATA SATIRLARI ====="
+          grep -n -i -E "error:|ERROR:|Traceback|fatal|BUILD FAILED|No matching|not found" clean.log | grep -v "pkg-config" | head -25 | cut -c1-300
+          echo "===== SON 40 SATIR (ENV ONCESI) ====="
+          grep -n "# Command failed" clean.log | head -1 | cut -c1-400
+          grep -v "^#" clean.log | tail -40 | cut -c1-300
 
       - name: APK yükle
         uses: actions/upload-artifact@v4
@@ -76,5 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-log
-          path: build.log
+          path: |
+            build.log
+            clean.log
           if-no-files-found: ignore
