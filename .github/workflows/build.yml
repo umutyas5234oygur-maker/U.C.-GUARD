@@ -1,4 +1,4 @@
-name: Build APK and EXE
+name: Build APK
 
 on: [push]
 
@@ -20,74 +20,3 @@ jobs:
       with:
         name: android-apk
         path: bin/*.apk
-
-  build-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller tkinter
-
-    - name: Build EXE with PyInstaller
-      run: |
-        pyinstaller --noconsole --onefile main.py
-
-    - name: Upload Windows EXE
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-exe
-        path: dist/*.exename: Build APK and EXE
-
-on: [push]
-
-jobs:
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Build with Buildozer
-      uses: kivy/buildozer-action@v1
-      with:
-        command: buildozer android debug
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: android-apk
-        path: bin/*.apk
-
-  build-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller tkinter
-
-    - name: Build EXE with PyInstaller
-      run: |
-        pyinstaller --noconsole --onefile main.py
-
-    - name: Upload Windows EXE
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-exe
-        path: dist/*.exe
