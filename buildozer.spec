@@ -24,7 +24,9 @@ android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.allow_backup = True
 
+# KRİTİK: p4a master Python 3.14 derliyor, Kivy 2.3.0 ile uyumsuz. Sabit sürüm:
+p4a.branch = v2024.01.21
+
 [buildozer]
 log_level = 2
 warn_on_root = 1
-p4a.branch = v2024.01.21
