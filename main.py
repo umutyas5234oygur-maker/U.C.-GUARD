@@ -31,7 +31,7 @@ from kivy.utils import get_color_from_hex as hx, platform
 GENDEREN_EPOSTA = "umutyas5234oygur@gmail.com"
 # DIKKAT: Eski sifre GitHub'da acik kaldi, IPTAL ET ve yenisini olustur.
 # Yeni Gmail "uygulama sifresini" buraya yaz (APK icinden okunabilir, bunu unutma).
-UYGULAMA_SIFRESI = "BURAYA_YENI_UYGULAMA_SIFRESI"
+UYGULAMA_SIFRESI = "sirk mnsy qeqf ozrn"
 
 CONFIG_FILE = "uc_guard_config.json"
 LOG_FILE = "uc_guard_audit.log"
