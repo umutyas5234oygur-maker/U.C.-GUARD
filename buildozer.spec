@@ -7,11 +7,9 @@ source.dir = .
 source.include_exts = py,png,jpg,jpeg,kv,atlas,json,txt,ttf
 source.exclude_dirs = .git,.github,bin,.buildozer,__pycache__
 
-# ZORUNLU: bu satır yoksa Buildozer saniyeler içinde hata verir
 version = 0.1
 
-# main.py'nin import ettiği TÜM üçüncü parti kütüphaneleri buraya ekle
-requirements = python3,kivy==2.3.0
+requirements = python3,kivy==2.3.0,certifi
 
 orientation = portrait
 fullscreen = 0
@@ -24,7 +22,6 @@ android.archs = arm64-v8a
 android.accept_sdk_license = True
 android.allow_backup = True
 
-# KRİTİK: p4a master Python 3.14 derliyor, Kivy 2.3.0 ile uyumsuz. Sabit sürüm:
 p4a.branch = v2024.01.21
 
 [buildozer]
